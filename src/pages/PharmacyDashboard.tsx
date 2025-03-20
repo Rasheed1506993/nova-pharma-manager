@@ -102,25 +102,21 @@ const PharmacyDashboard: React.FC = () => {
               <StatCard 
                 title="إجمالي المبيعات"
                 value={`${stats.totalSales.toLocaleString()} ر.س`}
-                description="+20.1% من الشهر الماضي"
                 loading={isLoading}
               />
               <StatCard 
                 title="المنتجات"
                 value={stats.totalProducts.toString()}
-                description="إجمالي المنتجات في المخزون"
                 loading={isLoading}
               />
               <StatCard 
                 title="العناصر منخفضة المخزون"
                 value={stats.lowStockItems.toString()}
-                description="تحتاج إلى إعادة طلب"
                 loading={isLoading}
               />
               <StatCard 
                 title="العملاء"
                 value={stats.totalCustomers.toString()}
-                description="إجمالي العملاء المسجلين"
                 loading={isLoading}
               />
             </div>
