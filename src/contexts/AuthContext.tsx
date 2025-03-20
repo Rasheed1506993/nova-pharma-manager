@@ -70,7 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { data, error } = await supabase
         .from('pharmacies')
         .select('*')
-        .eq('id', userId)
+        .eq('user_id', userId)
         .single();
       
       if (error) {

@@ -15,20 +15,31 @@ export type Database = {
           description: string | null
           id: string
           name: string
+          pharmacy_id: string | null
         }
         Insert: {
           created_at?: string | null
           description?: string | null
           id?: string
           name: string
+          pharmacy_id?: string | null
         }
         Update: {
           created_at?: string | null
           description?: string | null
           id?: string
           name?: string
+          pharmacy_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "categories_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "pharmacies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       customers: {
         Row: {
@@ -38,6 +49,7 @@ export type Database = {
           id: string
           loyalty_points: number | null
           name: string
+          pharmacy_id: string | null
           phone: string | null
           updated_at: string | null
         }
@@ -48,6 +60,7 @@ export type Database = {
           id?: string
           loyalty_points?: number | null
           name: string
+          pharmacy_id?: string | null
           phone?: string | null
           updated_at?: string | null
         }
@@ -58,8 +71,59 @@ export type Database = {
           id?: string
           loyalty_points?: number | null
           name?: string
+          pharmacy_id?: string | null
           phone?: string | null
           updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customers_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "pharmacies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pharmacies: {
+        Row: {
+          address: string | null
+          created_at: string | null
+          description: string | null
+          email: string | null
+          id: string
+          is_active: boolean | null
+          logo_url: string | null
+          name: string
+          phone: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string | null
+          description?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          name: string
+          phone?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string | null
+          description?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          name?: string
+          phone?: string | null
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -75,6 +139,7 @@ export type Database = {
           max_stock: number | null
           min_stock: number | null
           name: string
+          pharmacy_id: string | null
           price: number
           scientific_name: string | null
           stock: number
@@ -91,6 +156,7 @@ export type Database = {
           max_stock?: number | null
           min_stock?: number | null
           name: string
+          pharmacy_id?: string | null
           price: number
           scientific_name?: string | null
           stock?: number
@@ -107,12 +173,21 @@ export type Database = {
           max_stock?: number | null
           min_stock?: number | null
           name?: string
+          pharmacy_id?: string | null
           price?: number
           scientific_name?: string | null
           stock?: number
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "products_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "pharmacies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       purchase_items: {
         Row: {
@@ -163,6 +238,7 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
+          pharmacy_id: string | null
           status: string | null
           supplier_id: string
           total_amount: number
@@ -170,6 +246,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           id?: string
+          pharmacy_id?: string | null
           status?: string | null
           supplier_id: string
           total_amount: number
@@ -177,11 +254,19 @@ export type Database = {
         Update: {
           created_at?: string | null
           id?: string
+          pharmacy_id?: string | null
           status?: string | null
           supplier_id?: string
           total_amount?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "purchases_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "pharmacies"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "purchases_supplier_id_fkey"
             columns: ["supplier_id"]
@@ -243,6 +328,7 @@ export type Database = {
           discount: number | null
           id: string
           payment_method: string | null
+          pharmacy_id: string | null
           status: string | null
           total_amount: number
         }
@@ -252,6 +338,7 @@ export type Database = {
           discount?: number | null
           id?: string
           payment_method?: string | null
+          pharmacy_id?: string | null
           status?: string | null
           total_amount: number
         }
@@ -261,6 +348,7 @@ export type Database = {
           discount?: number | null
           id?: string
           payment_method?: string | null
+          pharmacy_id?: string | null
           status?: string | null
           total_amount?: number
         }
@@ -270,6 +358,13 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "pharmacies"
             referencedColumns: ["id"]
           },
         ]
@@ -282,6 +377,7 @@ export type Database = {
           email: string | null
           id: string
           name: string
+          pharmacy_id: string | null
           phone: string | null
           updated_at: string | null
         }
@@ -292,6 +388,7 @@ export type Database = {
           email?: string | null
           id?: string
           name: string
+          pharmacy_id?: string | null
           phone?: string | null
           updated_at?: string | null
         }
@@ -302,10 +399,19 @@ export type Database = {
           email?: string | null
           id?: string
           name?: string
+          pharmacy_id?: string | null
           phone?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "suppliers_pharmacy_id_fkey"
+            columns: ["pharmacy_id"]
+            isOneToOne: false
+            referencedRelation: "pharmacies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
