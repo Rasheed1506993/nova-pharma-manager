@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import PageContainer from '@/components/layout/PageContainer';
 import Header from '@/components/layout/Header';
@@ -113,7 +112,12 @@ const Customers = () => {
     mutationFn: async (values: CustomerFormValues) => {
       const { data, error } = await supabase
         .from('customers')
-        .insert([values])
+        .insert([{
+          name: values.name,
+          phone: values.phone || null,
+          email: values.email || null,
+          address: values.address || null
+        }])
         .select();
       
       if (error) throw error;

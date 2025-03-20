@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import PageContainer from '@/components/layout/PageContainer';
 import Header from '@/components/layout/Header';
@@ -72,7 +71,6 @@ const Pricing = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
-  // استعلام لجلب المنتجات
   const { data: products = [], isLoading } = useQuery({
     queryKey: ['products'],
     queryFn: async () => {
@@ -94,7 +92,6 @@ const Pricing = () => {
     }
   });
 
-  // نموذج تحديث الأسعار
   const bulkUpdateForm = useForm<UpdatePriceFormValues>({
     resolver: zodResolver(updatePriceSchema),
     defaultValues: {
@@ -105,7 +102,6 @@ const Pricing = () => {
     },
   });
 
-  // تعديل سعر منتج واحد
   const updateProductPriceMutation = useMutation({
     mutationFn: async ({ id, price }: { id: string, price: number }) => {
       const { data, error } = await supabase
@@ -133,30 +129,25 @@ const Pricing = () => {
     }
   });
 
-  // تعديل عدة منتجات دفعة واحدة
   const bulkUpdatePricesMutation = useMutation({
     mutationFn: async (values: UpdatePriceFormValues) => {
       const { amount, type, operation, category } = values;
       
-      // تحديد المنتجات المراد تحديثها
       let productsToUpdate = Object.entries(selectedRows)
         .filter(([_, isSelected]) => isSelected)
         .map(([id]) => id);
       
       if (productsToUpdate.length === 0) {
-        // إذا لم يتم تحديد أي منتج، اختر جميع المنتجات حسب التصفية
         productsToUpdate = filteredProducts.map(p => p.id);
       }
       
-      // الحصول على البيانات الحالية للمنتجات
       const { data: currentProducts, error: fetchError } = await supabase
         .from('products')
-        .select('id, price')
+        .select('id, price, name')
         .in('id', productsToUpdate);
       
       if (fetchError) throw fetchError;
       
-      // حساب الأسعار الجديدة
       const updates = currentProducts.map(product => {
         let newPrice = product.price;
         
@@ -166,14 +157,12 @@ const Pricing = () => {
           if (type === 'fixed') {
             newPrice += amount;
           } else {
-            // نسبة مئوية
             newPrice += (newPrice * amount) / 100;
           }
         } else if (operation === 'decrease') {
           if (type === 'fixed') {
             newPrice = Math.max(0, newPrice - amount);
           } else {
-            // نسبة مئوية
             newPrice -= (newPrice * amount) / 100;
             newPrice = Math.max(0, newPrice);
           }
@@ -182,14 +171,21 @@ const Pricing = () => {
         return {
           id: product.id,
           price: parseFloat(newPrice.toFixed(2)),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          name: product.name
         };
       });
       
-      // تحديث قاعدة البيانات
       const { error: updateError } = await supabase
         .from('products')
-        .upsert(updates);
+        .upsert(
+          updates.map(update => ({
+            id: update.id,
+            price: update.price,
+            updated_at: update.updated_at,
+            name: update.name
+          }))
+        );
       
       if (updateError) throw updateError;
       
@@ -218,10 +214,8 @@ const Pricing = () => {
     bulkUpdatePricesMutation.mutate(values);
   };
 
-  // الحصول على الفئات الفريدة من المنتجات
   const uniqueCategories = [...new Set(products.map(product => product.category).filter(Boolean))];
 
-  // تصفية المنتجات
   const filteredProducts = products.filter(product => {
     const matchesSearch = 
       product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -233,13 +227,10 @@ const Pricing = () => {
     return matchesSearch && matchesCategory;
   });
 
-  // إدارة التحديدات
   const toggleSelectAll = () => {
     if (Object.values(selectedRows).every(selected => selected === true)) {
-      // إلغاء تحديد الكل
       setSelectedRows({});
     } else {
-      // تحديد الكل
       const newSelectedRows = {};
       filteredProducts.forEach(product => {
         newSelectedRows[product.id] = true;
@@ -255,14 +246,11 @@ const Pricing = () => {
     }));
   };
 
-  // إدارة الصفوف القابلة للتعديل
   const toggleEditRow = (id: string) => {
     setEditableRows(prev => {
       const newEditableRows = { ...prev };
       
-      // إذا تم تحديد الصف للتعديل
       if (!newEditableRows[id]) {
-        // حفظ السعر الحالي في مصفوفة tempPrices
         const product = products.find(p => p.id === id);
         if (product) {
           setTempPrices(prev => ({
@@ -299,7 +287,6 @@ const Pricing = () => {
     toggleEditRow(id);
   };
 
-  // حساب نسبة هامش الربح
   const calculateMargin = (product: any) => {
     if (!product.cost_price || product.cost_price <= 0) return null;
     const margin = ((product.price - product.cost_price) / product.price) * 100;
@@ -356,7 +343,7 @@ const Pricing = () => {
                           <SelectContent>
                             <SelectItem value="increase">زيادة الأسعار</SelectItem>
                             <SelectItem value="decrease">تخفيض الأسعار</SelectItem>
-                            <SelectItem value="set">تعيين سعر محدد</SelectItem>
+                            <SelectItem value="set">تعيي�� سعر محدد</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />

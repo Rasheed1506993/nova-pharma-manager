@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import PageContainer from '@/components/layout/PageContainer';
 import Header from '@/components/layout/Header';
@@ -48,7 +47,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Progress } from "@/components/ui/progress";
 import { Badge } from '@/components/ui/badge';
 
-// تعريف مخطط البيانات للمنتج
 const productSchema = z.object({
   name: z.string().min(2, { message: 'اسم المنتج مطلوب ويجب أن يكون أكثر من حرفين' }),
   scientific_name: z.string().optional(),
@@ -81,7 +79,6 @@ const Products = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
-  // استعلام لجلب المنتجات
   const { data: products = [], isLoading } = useQuery({
     queryKey: ['products'],
     queryFn: async () => {
@@ -103,7 +100,6 @@ const Products = () => {
     }
   });
 
-  // استعلام لجلب التصنيفات
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
@@ -121,7 +117,6 @@ const Products = () => {
     }
   });
 
-  // نموذج إضافة منتج جديد
   const addForm = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -139,7 +134,6 @@ const Products = () => {
     },
   });
 
-  // نموذج تعديل بيانات المنتج
   const editForm = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -157,12 +151,23 @@ const Products = () => {
     },
   });
 
-  // إضافة منتج جديد
   const addProductMutation = useMutation({
     mutationFn: async (values: ProductFormValues) => {
       const { data, error } = await supabase
         .from('products')
-        .insert([values])
+        .insert([{
+          name: values.name,
+          price: values.price,
+          scientific_name: values.scientific_name || null,
+          barcode: values.barcode || null,
+          category: values.category || null,
+          manufacturer: values.manufacturer || null,
+          cost_price: values.cost_price || null,
+          stock: values.stock ?? 0,
+          min_stock: values.min_stock || null,
+          max_stock: values.max_stock || null,
+          expiry_date: values.expiry_date || null
+        }])
         .select();
       
       if (error) throw error;
@@ -186,7 +191,6 @@ const Products = () => {
     }
   });
 
-  // تعديل بيانات المنتج
   const updateProductMutation = useMutation({
     mutationFn: async (values: ProductFormValues & { id: string }) => {
       const { id, ...productData } = values;
@@ -217,7 +221,6 @@ const Products = () => {
     }
   });
 
-  // حذف المنتج
   const deleteProductMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
@@ -288,10 +291,8 @@ const Products = () => {
     }
   };
 
-  // الحصول على الفئات الفريدة من المنتجات
   const uniqueCategories = [...new Set(products.map(product => product.category).filter(Boolean))];
 
-  // تصفية المنتجات
   const filteredProducts = products.filter(product => {
     const matchesSearch = 
       product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -304,7 +305,6 @@ const Products = () => {
     return matchesSearch && matchesCategory;
   });
 
-  // حساب حالة المخزون
   const getStockStatus = (product: any) => {
     if (product.stock <= 0) {
       return { label: 'نفذ', color: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' };
@@ -317,14 +317,12 @@ const Products = () => {
     }
   };
 
-  // حساب نسبة المخزون
   const calculateStockPercentage = (product: any) => {
     if (!product.max_stock) return 0;
     const percentage = (product.stock / product.max_stock) * 100;
     return Math.min(percentage, 100);
   };
 
-  // حساب لون مؤشر المخزون
   const getStockIndicatorColor = (product: any) => {
     if (product.stock <= 0) {
       return "bg-red-500";
@@ -337,7 +335,6 @@ const Products = () => {
     }
   };
 
-  // التحقق من تاريخ انتهاء الصلاحية
   const isExpired = (expiryDate: string) => {
     if (!expiryDate) return false;
     const today = new Date();
@@ -352,7 +349,7 @@ const Products = () => {
     const threeMonths = 3 * 30 * 24 * 60 * 60 * 1000; // تقريبا 3 أشهر بالمللي ثانية
     return expiry > today && expiry.getTime() - today.getTime() < threeMonths;
   };
-  
+
   return (
     <div className="bg-background">
       <Header toggleSidebar={toggleSidebar} />
@@ -704,7 +701,6 @@ const Products = () => {
           </CardContent>
         </Card>
         
-        {/* تعديل المنتج */}
         <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
           <DialogContent className="sm:max-w-[550px]">
             <DialogHeader>
@@ -901,7 +897,6 @@ const Products = () => {
           </DialogContent>
         </Dialog>
         
-        {/* حذف المنتج */}
         <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
           <DialogContent className="sm:max-w-[400px]">
             <DialogHeader>
@@ -930,3 +925,4 @@ const Products = () => {
 };
 
 export default Products;
+

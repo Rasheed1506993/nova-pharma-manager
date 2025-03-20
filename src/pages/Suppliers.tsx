@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import PageContainer from '@/components/layout/PageContainer';
 import Header from '@/components/layout/Header';
@@ -39,7 +38,6 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-// تعريف مخطط البيانات للمورد
 const supplierSchema = z.object({
   name: z.string().min(2, { message: 'اسم المورد مطلوب ويجب أن يكون أكثر من حرفين' }),
   contact_person: z.string().optional(),
@@ -65,7 +63,6 @@ const Suppliers = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
-  // استعلام لجلب الموردين
   const { data: suppliers = [], isLoading } = useQuery({
     queryKey: ['suppliers'],
     queryFn: async () => {
@@ -87,7 +84,6 @@ const Suppliers = () => {
     }
   });
 
-  // نموذج إضافة مورد جديد
   const addForm = useForm<SupplierFormValues>({
     resolver: zodResolver(supplierSchema),
     defaultValues: {
@@ -99,7 +95,6 @@ const Suppliers = () => {
     },
   });
 
-  // نموذج تعديل بيانات المورد
   const editForm = useForm<SupplierFormValues>({
     resolver: zodResolver(supplierSchema),
     defaultValues: {
@@ -111,12 +106,17 @@ const Suppliers = () => {
     },
   });
 
-  // إضافة مورد جديد
   const addSupplierMutation = useMutation({
     mutationFn: async (values: SupplierFormValues) => {
       const { data, error } = await supabase
         .from('suppliers')
-        .insert([values])
+        .insert([{
+          name: values.name,
+          contact_person: values.contact_person || null,
+          phone: values.phone || null,
+          email: values.email || null,
+          address: values.address || null
+        }])
         .select();
       
       if (error) throw error;
@@ -128,7 +128,7 @@ const Suppliers = () => {
       addForm.reset();
       toast({
         title: "تمت الإضافة بنجاح",
-        description: "تم إضافة المورد الجديد بنجاح",
+        description: "تم إضافة المورد الجديد ��نجاح",
       });
     },
     onError: (error: any) => {
@@ -140,7 +140,6 @@ const Suppliers = () => {
     }
   });
 
-  // تعديل بيانات المورد
   const updateSupplierMutation = useMutation({
     mutationFn: async (values: SupplierFormValues & { id: string }) => {
       const { id, ...supplierData } = values;
@@ -171,7 +170,6 @@ const Suppliers = () => {
     }
   });
 
-  // حذف المورد
   const deleteSupplierMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
@@ -443,7 +441,6 @@ const Suppliers = () => {
           </CardContent>
         </Card>
         
-        {/* تعديل المورد */}
         <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
@@ -533,7 +530,6 @@ const Suppliers = () => {
           </DialogContent>
         </Dialog>
         
-        {/* حذف المورد */}
         <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
           <DialogContent className="sm:max-w-[400px]">
             <DialogHeader>
