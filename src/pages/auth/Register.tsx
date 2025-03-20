@@ -47,53 +47,51 @@ const Register = () => {
   });
 
   const onSubmit = async (data: RegisterFormValues) => {
-    try {
-      // 1. Create user account with Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+  try {
+    // 1. إنشاء المستخدم في supabase.auth
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+    });
+
+    if (authError) throw authError;
+
+    // 2. التأكد من أن عملية التسجيل تمت بنجاح ووجود user.id
+    const userId = authData.user?.id;
+    if (!userId) throw new Error("فشل في الحصول على معرف المستخدم");
+
+    // 3. إضافة بيانات الصيدلية إلى جدول pharmacies وربطها بـ user_id
+    const { error: profileError } = await supabase
+      .from('pharmacies')
+      .insert({
+        user_id: userId, // الربط بالمستخدم مباشرة (مهم لـ RLS)
+        name: data.pharmacyName,
         email: data.email,
-        password: data.password,
-        options: {
-          data: {
-            pharmacy_name: data.pharmacyName,
-            owner_name: data.ownerName,
-          }
-        }
+        phone: data.phoneNumber,
+        address: data.address,
+        owner_name: data.ownerName,
       });
 
-      if (authError) throw authError;
-      
-      // 2. Create pharmacy profile in the database
-      if (authData.user) {
-        const { error: profileError } = await supabase
-          .from('pharmacies')
-          .insert({
-            id: authData.user.id,
-            name: data.pharmacyName,
-            email: data.email,
-            phone: data.phoneNumber,
-            address: data.address,
-            owner_name: data.ownerName,
-          });
-        
-        if (profileError) throw profileError;
-        
-        toast({
-          title: "تم إنشاء الحساب بنجاح!",
-          description: "سيتم توجيهك إلى لوحة التحكم الخاصة بك.",
-        });
-        
-        // Redirect to dashboard
-        navigate('/');
-      }
-    } catch (error: any) {
-      console.error('Registration error:', error);
-      toast({
-        title: "خطأ في التسجيل",
-        description: error.message || "حدث خطأ أثناء إنشاء الحساب. الرجاء المحاولة مرة أخرى.",
-        variant: "destructive",
-      });
-    }
-  };
+    if (profileError) throw profileError;
+
+    // 4. إظهار رسالة النجاح والتوجيه
+    toast({
+      title: "تم إنشاء الحساب بنجاح!",
+      description: "سيتم توجيهك إلى لوحة التحكم الخاصة بك.",
+    });
+
+    navigate('/');
+
+  } catch (error: any) {
+    console.error('Registration error:', error);
+    toast({
+      title: "خطأ في التسجيل",
+      description: error.message || "حدث خطأ أثناء إنشاء الحساب. الرجاء المحاولة مرة أخرى.",
+      variant: "destructive",
+    });
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
