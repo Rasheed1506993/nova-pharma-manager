@@ -37,7 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Search, Plus, Package, Edit, Trash2, AlertTriangle, Tag } from 'lucide-react';
+import { Search, Plus, Package, Edit, Trash2, AlertTriangle, Tag, Scan, RotateCw } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -46,6 +46,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Progress } from "@/components/ui/progress";
 import { Badge } from '@/components/ui/badge';
+import BarcodeGenerator from '@/components/inventory/BarcodeGenerator';
+import { generateUniqueBarcode } from '@/lib/barcode';
 
 const productSchema = z.object({
   name: z.string().min(2, { message: 'اسم المنتج مطلوب ويجب أن يكون أكثر من حرفين' }),
@@ -68,6 +70,7 @@ const Products = () => {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isBarcodeOpen, setIsBarcodeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -122,7 +125,7 @@ const Products = () => {
     defaultValues: {
       name: '',
       scientific_name: '',
-      barcode: '',
+      barcode: generateUniqueBarcode(),
       category: '',
       manufacturer: '',
       price: 0,
@@ -133,6 +136,13 @@ const Products = () => {
       expiry_date: '',
     },
   });
+
+  // توليد باركود جديد عند فتح نموذج الإضافة
+  useEffect(() => {
+    if (isAddOpen) {
+      addForm.setValue('barcode', generateUniqueBarcode());
+    }
+  }, [isAddOpen, addForm]);
 
   const editForm = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
@@ -250,11 +260,19 @@ const Products = () => {
   });
 
   const onAddSubmit = (values: ProductFormValues) => {
+    // إذا لم يكن هناك باركود، قم بتوليد واحد
+    if (!values.barcode) {
+      values.barcode = generateUniqueBarcode();
+    }
     addProductMutation.mutate(values);
   };
 
   const onEditSubmit = (values: ProductFormValues) => {
     if (selectedProduct) {
+      // إذا لم يكن هناك باركود، قم بتوليد واحد
+      if (!values.barcode) {
+        values.barcode = generateUniqueBarcode();
+      }
       updateProductMutation.mutate({
         id: selectedProduct.id,
         ...values,
@@ -283,6 +301,21 @@ const Products = () => {
   const openDeleteDialog = (product: any) => {
     setSelectedProduct(product);
     setIsDeleteOpen(true);
+  };
+
+  const openBarcodeDialog = (product: any) => {
+    setSelectedProduct(product);
+    setIsBarcodeOpen(true);
+  };
+
+  const regenerateBarcode = () => {
+    const newBarcode = generateUniqueBarcode();
+    addForm.setValue('barcode', newBarcode);
+  };
+
+  const regenerateEditBarcode = () => {
+    const newBarcode = generateUniqueBarcode();
+    editForm.setValue('barcode', newBarcode);
   };
 
   const confirmDelete = () => {
@@ -460,10 +493,37 @@ const Products = () => {
                       name="barcode"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>الباركود</FormLabel>
+                          <FormLabel className="flex justify-between items-center">
+                            <span>الباركود</span>
+                            <Button 
+                              type="button"
+                              variant="outline" 
+                              size="sm" 
+                              className="h-6 px-2 text-xs flex items-center gap-1"
+                              onClick={regenerateBarcode}
+                              title="توليد باركود جديد"
+                            >
+                              <RotateCw className="h-3 w-3" />
+                              <span>توليد جديد</span>
+                            </Button>
+                          </FormLabel>
                           <FormControl>
-                            <Input placeholder="أدخل رقم الباركود" {...field} />
+                            <div className="flex gap-2">
+                              <Input placeholder="رقم الباركود" {...field} />
+                              <Button 
+                                type="button"
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-9 w-9 flex-shrink-0"
+                                title="مسح رمز الباركود"
+                              >
+                                <Scan className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </FormControl>
+                          <div className="mt-2">
+                            <BarcodeGenerator value={field.value || ''} height={60} width={1.5} />
+                          </div>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -637,6 +697,17 @@ const Products = () => {
                             {product.manufacturer && (
                               <div className="text-xs text-gray-500">{product.manufacturer}</div>
                             )}
+                            {product.barcode && (
+                              <div className="text-xs flex items-center gap-1 text-gray-500">
+                                <Scan className="h-3 w-3" />
+                                <span 
+                                  className="cursor-pointer hover:underline" 
+                                  onClick={() => openBarcodeDialog(product)}
+                                >
+                                  {product.barcode}
+                                </span>
+                              </div>
+                            )}
                           </div>
                         </TableCell>
                         <TableCell>{product.category || '-'}</TableCell>
@@ -684,6 +755,15 @@ const Products = () => {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center justify-center space-x-2 space-x-reverse">
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-8 w-8" 
+                              onClick={() => openBarcodeDialog(product)}
+                              title="عرض الباركود"
+                            >
+                              <Scan className="h-4 w-4" />
+                            </Button>
                             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEditDialog(product)}>
                               <Edit className="h-4 w-4" />
                             </Button>
@@ -789,10 +869,37 @@ const Products = () => {
                     name="barcode"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>الباركود</FormLabel>
+                        <FormLabel className="flex justify-between items-center">
+                          <span>الباركود</span>
+                          <Button 
+                            type="button"
+                            variant="outline" 
+                            size="sm" 
+                            className="h-6 px-2 text-xs flex items-center gap-1"
+                            onClick={regenerateEditBarcode}
+                            title="توليد باركود جديد"
+                          >
+                            <RotateCw className="h-3 w-3" />
+                            <span>توليد جديد</span>
+                          </Button>
+                        </FormLabel>
                         <FormControl>
-                          <Input placeholder="أدخل رقم الباركود" {...field} />
+                          <div className="flex gap-2">
+                            <Input placeholder="رقم الباركود" {...field} />
+                            <Button 
+                              type="button"
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-9 w-9 flex-shrink-0"
+                              title="مسح رمز الباركود"
+                            >
+                              <Scan className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </FormControl>
+                        <div className="mt-2">
+                          <BarcodeGenerator value={field.value || ''} height={60} width={1.5} />
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -820,109 +927,3 @@ const Products = () => {
                       <FormItem>
                         <FormLabel>سعر البيع</FormLabel>
                         <FormControl>
-                          <Input type="number" min="0" step="0.01" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={editForm.control}
-                    name="cost_price"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>سعر التكلفة</FormLabel>
-                        <FormControl>
-                          <Input type="number" min="0" step="0.01" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={editForm.control}
-                    name="stock"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>المخزون</FormLabel>
-                        <FormControl>
-                          <Input type="number" min="0" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={editForm.control}
-                    name="min_stock"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>الحد الأدنى للمخزون</FormLabel>
-                        <FormControl>
-                          <Input type="number" min="0" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={editForm.control}
-                    name="max_stock"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>الحد الأقصى للمخزون</FormLabel>
-                        <FormControl>
-                          <Input type="number" min="0" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                
-                <DialogFooter>
-                  <Button 
-                    type="submit" 
-                    className="bg-pharma-600 hover:bg-pharma-700"
-                    disabled={updateProductMutation.isPending}
-                  >
-                    {updateProductMutation.isPending ? 'جاري التحديث...' : 'تحديث البيانات'}
-                  </Button>
-                </DialogFooter>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
-        
-        <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
-          <DialogContent className="sm:max-w-[400px]">
-            <DialogHeader>
-              <DialogTitle>حذف المنتج</DialogTitle>
-              <DialogDescription>
-                هل أنت متأكد من رغبتك في حذف هذا المنتج؟ لا يمكن التراجع عن هذا الإجراء.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsDeleteOpen(false)}>
-                إلغاء
-              </Button>
-              <Button 
-                variant="destructive" 
-                onClick={confirmDelete}
-                disabled={deleteProductMutation.isPending}
-              >
-                {deleteProductMutation.isPending ? 'جاري الحذف...' : 'تأكيد الحذف'}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </PageContainer>
-    </div>
-  );
-};
-
-export default Products;
-
