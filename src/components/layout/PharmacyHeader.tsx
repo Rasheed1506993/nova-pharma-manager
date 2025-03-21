@@ -34,6 +34,14 @@ const PharmacyHeader: React.FC<HeaderProps> = ({ toggleSidebar }) => {
     await signOut();
   };
 
+  // Get owner name from description
+  const getOwnerName = () => {
+    if (!pharmacy?.description) return 'المستخدم';
+    
+    const match = pharmacy.description.match(/صيدلية يملكها: (.+)/);
+    return match ? match[1] : 'المستخدم';
+  };
+
   return (
     <header className="z-20 fixed top-0 left-0 right-0 h-16 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800 shadow-sm flex items-center px-4 sm:px-6">
       <div className="flex w-full justify-between items-center">
@@ -80,7 +88,7 @@ const PharmacyHeader: React.FC<HeaderProps> = ({ toggleSidebar }) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>{pharmacy?.owner_name || 'المستخدم'}</DropdownMenuLabel>
+              <DropdownMenuLabel>{getOwnerName()}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>الملف الشخصي</DropdownMenuItem>
               <DropdownMenuItem>إعدادات الصيدلية</DropdownMenuItem>
