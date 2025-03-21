@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,7 +9,7 @@ interface PharmacyProfile {
   email: string;
   phone?: string;
   address?: string;
-  owner_name?: string;
+  description?: string;
   created_at?: string;
 }
 

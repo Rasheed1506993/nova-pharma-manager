@@ -71,6 +71,14 @@ const PharmacyDashboard: React.FC = () => {
     fetchDashboardData();
   }, []);
 
+  // Get owner name from description
+  const getOwnerName = () => {
+    if (!pharmacy?.description) return pharmacy?.name;
+    
+    const match = pharmacy.description.match(/صيدلية يملكها: (.+)/);
+    return match ? match[1] : pharmacy.name;
+  };
+
   // Sample data for charts
   const salesData = [
     { name: 'يناير', sales: 4000 },
@@ -85,7 +93,7 @@ const PharmacyDashboard: React.FC = () => {
     <PharmacyNavbar>
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">مرحباً بك، {pharmacy?.owner_name}</h2>
+          <h2 className="text-3xl font-bold tracking-tight">مرحباً بك، {getOwnerName()}</h2>
           <div className="flex items-center space-x-2">
             {/* Additional actions can go here */}
           </div>

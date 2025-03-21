@@ -12,6 +12,7 @@ interface StatCardProps {
     positive: boolean;
   };
   className?: string;
+  loading?: boolean;
 }
 
 const StatCard: React.FC<StatCardProps> = ({ 
@@ -19,7 +20,8 @@ const StatCard: React.FC<StatCardProps> = ({
   value, 
   icon,
   change,
-  className 
+  className,
+  loading = false
 }) => {
   return (
     <Card className={cn(
@@ -38,10 +40,14 @@ const StatCard: React.FC<StatCardProps> = ({
           )}
         </div>
         <div className="mt-2">
-          <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-            {value}
-          </p>
-          {change && (
+          {loading ? (
+            <div className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+          ) : (
+            <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+              {value}
+            </p>
+          )}
+          {change && !loading && (
             <p className={cn(
               "text-xs font-medium mt-1",
               change.positive ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"

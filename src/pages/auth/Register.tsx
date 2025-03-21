@@ -69,7 +69,7 @@ const Register = () => {
         email: data.email,
         phone: data.phoneNumber,
         address: data.address,
-        owner_name: data.ownerName,
+        description: `صيدلية يملكها: ${data.ownerName}` // نستخدم حقل الوصف لتخزين اسم المالك
       });
 
     if (profileError) throw profileError;
