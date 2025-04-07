@@ -10,18 +10,20 @@ interface ProductCardProps {
   product: {
     id: string;
     name: string;
-    scientificName: string;
-    price: string;
+    scientific_name?: string;
+    price: number;
     stock: number;
-    expiryDate: string;
-    category: string;
+    expiry_date?: string;
+    category?: string;
     image?: string;
+    barcode?: string;
+    manufacturer?: string;
   };
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const isLowStock = product.stock < 10;
-  const isExpiringSoon = new Date(product.expiryDate) < new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
+  const isExpiringSoon = product.expiry_date && new Date(product.expiry_date) < new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
   
   return (
     <Card className="glass-card overflow-hidden group transition-all duration-300 hover:-translate-y-1">
@@ -33,7 +35,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             </div>
             <div>
               <h3 className="font-medium text-gray-900 dark:text-gray-100">{product.name}</h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400">{product.scientificName}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{product.scientific_name}</p>
             </div>
           </div>
           <Badge className={cn(
@@ -42,14 +44,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             product.category === "مضادات حيوية" ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" :
             "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400"
           )}>
-            {product.category}
+            {product.category || "غير مصنف"}
           </Badge>
         </div>
         
         <div className="flex items-center justify-between mb-2">
           <div className="flex flex-col">
             <span className="text-sm text-gray-500 dark:text-gray-400">السعر</span>
-            <span className="font-semibold">{product.price}</span>
+            <span className="font-semibold">{product.price?.toFixed(2)} ر.س</span>
           </div>
           <div className="flex flex-col text-right">
             <span className="text-sm text-gray-500 dark:text-gray-400">المخزون</span>
@@ -69,7 +71,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               "text-sm font-medium",
               isExpiringSoon ? "text-amber-600 dark:text-amber-400" : "text-gray-700 dark:text-gray-300"
             )}>
-              {product.expiryDate}
+              {product.expiry_date ? new Date(product.expiry_date).toLocaleDateString('ar-SA') : '-'}
             </span>
           </div>
           
