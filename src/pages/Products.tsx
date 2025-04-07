@@ -927,3 +927,4 @@ const Products = () => {
                       <FormItem>
                         <FormLabel>سعر البيع</FormLabel>
                         <FormControl>
+                          <Input
