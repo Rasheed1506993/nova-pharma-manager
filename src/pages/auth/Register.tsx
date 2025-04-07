@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
@@ -47,51 +46,50 @@ const Register = () => {
   });
 
   const onSubmit = async (data: RegisterFormValues) => {
-  try {
-    // 1. إنشاء المستخدم في supabase.auth
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: data.email,
-      password: data.password,
-    });
-
-    if (authError) throw authError;
-
-    // 2. التأكد من أن عملية التسجيل تمت بنجاح ووجود user.id
-    const userId = authData.user?.id;
-    if (!userId) throw new Error("فشل في الحصول على معرف المستخدم");
-
-    // 3. إضافة بيانات الصيدلية إلى جدول pharmacies وربطها بـ user_id
-    const { error: profileError } = await supabase
-      .from('pharmacies')
-      .insert({
-        user_id: userId, // الربط بالمستخدم مباشرة (مهم لـ RLS)
-        name: data.pharmacyName,
+    try {
+      // 1. إنشاء المستخدم في supabase.auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email: data.email,
-        phone: data.phoneNumber,
-        address: data.address,
-        description: `صيدلية يملكها: ${data.ownerName}` // نستخدم حقل الوصف لتخزين اسم المالك
+        password: data.password,
       });
 
-    if (profileError) throw profileError;
+      if (authError) throw authError;
 
-    // 4. إظهار رسالة النجاح والتوجيه
-    toast({
-      title: "تم إنشاء الحساب بنجاح!",
-      description: "سيتم توجيهك إلى لوحة التحكم الخاصة بك.",
-    });
+      // 2. التأكد من أن عملية التسجيل تمت بنجاح ووجود user.id
+      const userId = authData.user?.id;
+      if (!userId) throw new Error("فشل في الحصول على معرف المستخدم");
 
-    navigate('/');
+      // 3. إضافة بيانات الصيدلية إلى جدول pharmacies وربطها بـ user_id
+      const { error: profileError } = await supabase
+        .from('pharmacies')
+        .insert({
+          user_id: userId,
+          name: data.pharmacyName,
+          email: data.email,
+          phone: data.phoneNumber,
+          address: data.address,
+          description: `صيدلية يملكها: ${data.ownerName}`
+        });
 
-  } catch (error: any) {
-    console.error('Registration error:', error);
-    toast({
-      title: "خطأ في التسجيل",
-      description: error.message || "حدث خطأ أثناء إنشاء الحساب. الرجاء المحاولة مرة أخرى.",
-      variant: "destructive",
-    });
-  }
-};
+      if (profileError) throw profileError;
 
+      // 4. إظهار رسالة النجاح والتوجيه
+      toast({
+        title: "تم إنشاء الحساب بنجاح!",
+        description: "سيتم توجيهك إلى لوحة التحكم الخاصة بك.",
+      });
+
+      navigate('/');
+
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      toast({
+        title: "خطأ في التسجيل",
+        description: error.message || "حدث خطأ أثناء إنشاء الحساب. الرجاء المحاولة مرة أخرى.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
