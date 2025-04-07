@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import PageContainer from '@/components/layout/PageContainer';
 import Header from '@/components/layout/Header';
@@ -48,6 +49,23 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from '@/components/ui/badge';
 import BarcodeGenerator from '@/components/inventory/BarcodeGenerator';
 import { generateUniqueBarcode } from '@/lib/barcode';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 const productSchema = z.object({
   name: z.string().min(2, { message: 'اسم المنتج مطلوب ويجب أن يكون أكثر من حرفين' }),
@@ -927,4 +945,133 @@ const Products = () => {
                       <FormItem>
                         <FormLabel>سعر البيع</FormLabel>
                         <FormControl>
-                          <Input
+                          <Input type="number" min="0" step="0.01" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={editForm.control}
+                    name="cost_price"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>سعر التكلفة</FormLabel>
+                        <FormControl>
+                          <Input type="number" min="0" step="0.01" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={editForm.control}
+                    name="stock"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>المخزون</FormLabel>
+                        <FormControl>
+                          <Input type="number" min="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={editForm.control}
+                    name="min_stock"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>الحد الأدنى للمخزون</FormLabel>
+                        <FormControl>
+                          <Input type="number" min="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={editForm.control}
+                    name="max_stock"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>الحد الأقصى للمخزون</FormLabel>
+                        <FormControl>
+                          <Input type="number" min="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
+                <DialogFooter>
+                  <Button 
+                    type="submit" 
+                    className="bg-pharma-600 hover:bg-pharma-700"
+                    disabled={updateProductMutation.isPending}
+                  >
+                    {updateProductMutation.isPending ? 'جاري التحديث...' : 'تحديث المنتج'}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+
+        <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>هل أنت متأكد؟</AlertDialogTitle>
+              <AlertDialogDescription>
+                هل أنت متأكد من حذف هذا المنتج؟ لا يمكن التراجع عن هذا الإجراء.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>إلغاء</AlertDialogCancel>
+              <AlertDialogAction 
+                className="bg-red-500 hover:bg-red-600" 
+                onClick={confirmDelete}
+                disabled={deleteProductMutation.isPending}
+              >
+                {deleteProductMutation.isPending ? 'جاري الحذف...' : 'تأكيد الحذف'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        <Sheet open={isBarcodeOpen} onOpenChange={setIsBarcodeOpen}>
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>باركود المنتج</SheetTitle>
+              <SheetDescription>
+                {selectedProduct?.name}
+              </SheetDescription>
+            </SheetHeader>
+            <div className="py-6">
+              {selectedProduct?.barcode && (
+                <div className="flex flex-col items-center space-y-4">
+                  <BarcodeGenerator 
+                    value={selectedProduct.barcode} 
+                    height={120} 
+                    width={2} 
+                    fontSize={16}
+                    className="max-w-full"
+                  />
+                  <p className="text-center text-muted-foreground">
+                    يمكنك طباعة هذا الباركود عن طريق الضغط على زر الطباعة أعلاه
+                  </p>
+                </div>
+              )}
+            </div>
+          </SheetContent>
+        </Sheet>
+      </PageContainer>
+    </div>
+  );
+};
+
+export default Products;
