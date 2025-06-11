@@ -1,69 +1,239 @@
-# Welcome to your Lovable project
 
-## Project info
+# Nova Pharma - نظام إدارة الصيدليات
 
-**URL**: https://lovable.dev/projects/df32e09e-9e43-4405-9eec-f51033cc4948
+نظام متكامل لإدارة الصيدليات يساعدك على تحسين الكفاءة وزيادة الربحية من خلال واجهة سهلة الاستخدام ومميزات متقدمة.
 
-## How can I edit this code?
+## 🌟 المميزات الرئيسية
 
-There are several ways of editing your application.
+### 📦 إدارة المخزون
+- تتبع دقيق للمخزون مع معلومات تفصيلية عن كل منتج
+- مراقبة تواريخ انتهاء الصلاحية مع تنبيهات آلية
+- إدارة الحد الأدنى والأقصى للمخزون
+- توليد باركود تلقائي للمنتجات الجديدة
+- البحث والفلترة المتقدمة
 
-**Use Lovable**
+### 🛒 نقاط البيع
+- واجهة سريعة وسهلة لإتمام المبيعات
+- دعم قارئ الباركود
+- حسابات تلقائية للمجاميع والضرائب
+- إصدار الفواتير وطباعتها
+- إدارة طرق الدفع المختلفة
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/df32e09e-9e43-4405-9eec-f51033cc4948) and start prompting.
+### 👥 إدارة العملاء
+- قاعدة بيانات شاملة للعملاء
+- تتبع تاريخ المشتريات
+- نظام نقاط الولاء
+- إدارة بيانات التواصل والعناوين
 
-Changes made via Lovable will be committed automatically to this repo.
+### 📊 التقارير والتحليلات
+- تقارير تفصيلية عن المبيعات والأرباح
+- تحليل أداء المنتجات
+- رسوم بيانية توضح اتجاهات الأداء
+- تقارير المخزون والصلاحية
 
-**Use your preferred IDE**
+### 🏪 إدارة الموردين
+- قاعدة بيانات للموردين
+- تتبع الطلبات والمشتريات
+- إدارة بيانات التواصل والشروط
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🚀 البدء السريع
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### متطلبات النظام
 
-Follow these steps:
+- Node.js (الإصدار 18 أو أحدث)
+- npm أو yarn
+- حساب Supabase (للقاعدة البيانات والمصادقة)
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### التثبيت
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+1. **استنساخ المشروع**
+```bash
+git clone <رابط-المستودع>
+cd nova-pharma
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
+2. **تثبيت الحزم المطلوبة**
+```bash
+npm install
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+3. **إعداد متغيرات البيئة**
+```bash
+cp .env.example .env.local
+```
+قم بتحديث ملف `.env.local` بمعلومات قاعدة البيانات الخاصة بك.
+
+4. **تشغيل التطبيق**
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+سيكون التطبيق متاحاً على `http://localhost:8080`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🔧 التقنيات المستخدمة
 
-**Use GitHub Codespaces**
+- **Frontend**: React 18, TypeScript
+- **التصميم**: Tailwind CSS, shadcn/ui
+- **التوجيه**: React Router DOM
+- **قاعدة البيانات**: Supabase (PostgreSQL)
+- **المصادقة**: Supabase Auth
+- **إدارة الحالة**: React Query
+- **الأشكال**: React Hook Form + Zod
+- **الرسوم البيانية**: Recharts
+- **الأيقونات**: Lucide React
+- **بناء المشروع**: Vite
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 📱 الواجهات الرئيسية
 
-## What technologies are used for this project?
+### 🏠 لوحة التحكم
+- نظرة عامة على أداء الصيدلية
+- إحصائيات المبيعات والأرباح
+- تنبيهات المخزون والصلاحية
+- الأنشطة الأخيرة
 
-This project is built with .
+### 📦 إدارة المنتجات
+- عرض جميع المنتجات في جدول منظم
+- إضافة وتعديل المنتجات
+- توليد وطباعة الباركود
+- إدارة التصنيفات والأسعار
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### 🛒 المبيعات
+- إنشاء فواتير جديدة
+- البحث عن المنتجات بالباركود أو الاسم
+- حساب المجاميع والخصومات
+- طباعة الفواتير
 
-## How can I deploy this project?
+### 👥 العملاء
+- إدارة قاعدة بيانات العملاء
+- تتبع تاريخ المشتريات
+- نظام نقاط الولاء
+- التواصل مع العملاء
 
-Simply open [Lovable](https://lovable.dev/projects/df32e09e-9e43-4405-9eec-f51033cc4948) and click on Share -> Publish.
+### 📊 التقارير
+- تقارير المبيعات اليومية والشهرية
+- تحليل أداء المنتجات
+- تقارير المخزون
+- تقارير الأرباح والخسائر
 
-## I want to use a custom domain - is that possible?
+## 🗃️ هيكل قاعدة البيانات
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+### الجداول الرئيسية
+
+- **pharmacies**: معلومات الصيدليات
+- **products**: المنتجات والأدوية
+- **customers**: بيانات العملاء
+- **suppliers**: معلومات الموردين
+- **sales**: عمليات البيع
+- **sale_items**: عناصر الفواتير
+- **categories**: تصنيفات المنتجات
+
+### الأمان والخصوصية
+
+- تطبيق Row Level Security (RLS)
+- تشفير البيانات الحساسة
+- مصادقة آمنة عبر Supabase Auth
+- إدارة الصلاحيات حسب المستخدم
+
+## 🔐 المصادقة والأمان
+
+- تسجيل الدخول عبر البريد الإلكتروني وكلمة المرور
+- إعادة تعيين كلمة المرور
+- تسجيل صيدليات جديدة
+- حماية الطرق الخاصة
+- إدارة جلسات المستخدمين
+
+## 📱 التصميم المتجاوب
+
+- تصميم متجاوب يعمل على جميع الأجهزة
+- واجهة محسنة للهواتف المحمولة
+- دعم الوضع الليلي والنهاري
+- خطوط عربية واضحة ومقروءة
+
+## 🛠️ أوامر التطوير
+
+```bash
+# تشغيل التطبيق في وضع التطوير
+npm run dev
+
+# بناء المشروع للإنتاج
+npm run build
+
+# معاينة النسخة المبنية
+npm run preview
+
+# فحص الكود
+npm run lint
+
+# تنسيق الكود
+npm run format
+```
+
+## 📁 هيكل المشروع
+
+```
+src/
+├── components/          # مكونات واجهة المستخدم
+│   ├── ui/             # مكونات shadcn/ui الأساسية
+│   ├── layout/         # مكونات التخطيط
+│   ├── dashboard/      # مكونات لوحة التحكم
+│   ├── inventory/      # مكونات إدارة المخزون
+│   └── sales/          # مكونات المبيعات
+├── pages/              # صفحات التطبيق
+├── contexts/           # سياقات React
+├── hooks/              # خطافات مخصصة
+├── lib/                # أدوات مساعدة
+├── types/              # تعريفات الأنواع
+└── integrations/       # تكامل مع الخدمات الخارجية
+    └── supabase/       # إعدادات Supabase
+```
+
+## 🔄 التحديثات والصيانة
+
+### النسخة الحالية: 1.0.0
+
+- ✅ إدارة المنتجات والمخزون
+- ✅ نظام المبيعات والفواتير
+- ✅ إدارة العملاء والموردين
+- ✅ التقارير الأساسية
+- ✅ توليد الباركود
+- ✅ التصميم المتجاوب
+
+### التحديثات المستقبلية
+
+- 🔄 تكامل مع أنظمة المدفوعات الإلكترونية
+- 🔄 تطبيق الهاتف المحمول
+- 🔄 نظام إدارة الفروع المتعددة
+- 🔄 تكامل مع أنظمة الجرد الآلي
+- 🔄 تقارير متقدمة وذكاء اصطناعي
+
+## 🤝 المساهمة
+
+نرحب بمساهماتكم في تطوير المشروع:
+
+1. قم بعمل Fork للمشروع
+2. أنشئ فرع جديد للميزة (`git checkout -b feature/amazing-feature`)
+3. قم بتطبيق التغييرات (`git commit -m 'Add amazing feature'`)
+4. ادفع التغييرات (`git push origin feature/amazing-feature`)
+5. أنشئ Pull Request
+
+## 📞 الدعم الفني
+
+- **البريد الإلكتروني**: support@novapharma.com
+- **الوثائق**: [docs.novapharma.com](https://docs.novapharma.com)
+- **المجتمع**: [discord.gg/novapharma](https://discord.gg/novapharma)
+
+## 📄 الترخيص
+
+هذا المشروع مرخص تحت رخصة MIT - راجع ملف [LICENSE](LICENSE) للتفاصيل.
+
+## 🙏 شكر وتقدير
+
+- [Supabase](https://supabase.com) - قاعدة البيانات والمصادقة
+- [Shadcn/ui](https://ui.shadcn.com) - مكونات واجهة المستخدم
+- [Tailwind CSS](https://tailwindcss.com) - إطار عمل التصميم
+- [Lucide](https://lucide.dev) - مكتبة الأيقونات
+- [Recharts](https://recharts.org) - مكتبة الرسوم البيانية
+
+---
+
+© 2024 Nova Pharma. جميع الحقوق محفوظة.
